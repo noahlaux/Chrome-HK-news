@@ -1,0 +1,57 @@
+
+body {
+	background-color: #f6f6ef;
+	font-family: Verdana;
+	font-size: 12px;
+	width: 500px;
+}
+
+a:link {
+	color: black;
+	text-decoration: none;
+ 	text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#loader, #refresh {
+	float: right;
+}
+
+#refresh {
+	cursor: pointer;
+}
+
+a:hover {
+	color: #F60;
+}
+
+a:visited {
+	color: #828282 !important;
+}
+
+h2 {
+	background-color: #F60;
+	padding: 5px;
+	font-size: 14px;
+}
+
+ul {
+	list-style: none;
+	padding: 0 0 10px 0px;
+	height: 400px;
+	overflow: auto;
+}
+
+ul li {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+ul li div a, ul li div a:visited {
+	font-size: smaller;
+	color: #828282 !important;
+	font-weight: normal;
+	text-transform: uppercase;
+}
