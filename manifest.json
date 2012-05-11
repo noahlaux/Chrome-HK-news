@@ -1,8 +1,8 @@
 {
   "name": "Chrome HackerNews",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "manifest_version": 2,
-  "description": "Display the most popular news on a list",
+  "description": "Display the most popular Hacker News (news.ycombinator.com) on a list",
   "browser_action": {
     "default_icon": "icon.gif",
     "default_popup": "popup.html"
