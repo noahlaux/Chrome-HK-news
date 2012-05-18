@@ -1,93 +1,100 @@
-( function() {
-
+document.addEventListener('DOMContentLoaded', function () {
+  
   var app = {
     /**
-     * [init description]
-     * @return {[type]} [description]
+     * Intialize
+     *
+     * @return N/A
      */
     init: function() {
 
       var self = this;
 
-      this.xsl        = "hknews.xsl";
-      this.xml        = "http://news.ycombinator.com/rss";
+      // Declare elements
+      this.container  = document.getElementById("container");
+      this.loaderIcon = document.getElementById('refresh');
+      
+      // Declare paths
+      this.xslPath    = "hknews.xsl";
+      this.xmlPath    = "http://news.ycombinator.com/rss";
 
+      // Load and cache XLS to use for tranformation
+      this.xsl        = self.loadXMLDoc( self.xslPath );
+
+      // Trigger analytics
       this.analytics();
+      
+      // Setup events
+      this.setupEvents();
 
-      document.addEventListener('DOMContentLoaded', function () {
+      // Load contents
+      this.loadContent();
 
-        document.getElementById('refresh').addEventListener('click', function () {
-          var xsl = self.loadXMLDoc( self.xsl );
-          
-          self.loadXMLDoc( self.xml, true, function( response ) {
-            self.displayResult( xsl, response );
-          });
+    },
+    /**
+     * Load and output content
+     *
+     * @return N/A
+     */
+    loadContent: function() {
 
-        });
+      var self = this;
 
-        self.container  = document.getElementById("container");
-        self.loaderIcon = document.getElementById('refresh');
-
-        var xsl = self.loadXMLDoc( self.xsl );
-            
-        self.loadXMLDoc( self.xml, true, function( response ) {
-          self.displayResult( xsl, response );
-        });
-
+      this.loadXMLDoc( this.xmlPath, true, function( response ) {
+        // Transform response to HTML
+        var resultDocument = self.transformXML( self.xsl, response );
+        
+        self.container.innerHTML = "";
+        self.container.appendChild( resultDocument );
       });
 
     },
     /**
-     * [analytics description]
-     * @return {[type]} [description]
+     * Loads XML document, cache and parses it
+     *
+     * @param  {String}   url
+     * @param  {Boolean}  force    Force update
+     * @param  {Function} callback
+     * @return N/A
      */
-    analytics: function() {
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-31623194-1']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    },
-    /**
-     * [loadXMLDoc description]
-     * @param  {[type]} name [description]
-     * @return {[type]}      [description]
-     */
-    loadXMLDoc: function( name, force, callback ) {
+    loadXMLDoc: function( url, force, callback ) {
       
       var self = this;
 
+      // Show loader icon
       this.loader('show');
 
-      if ( localStorage[ name ] && !force ) {
+      // Check if cache exits, and if we should force reload
+      if ( localStorage[ url ] && !force ) {
 
-        return this.parseXML( localStorage[ name ] );
+        // Return cached XML
+        return this.parseXML( localStorage[ url ] );
 
       } else {
 
+        // Initiate new request
         var xhttp = new XMLHttpRequest();
 
-        xhttp.open( "GET", name, true );
+        xhttp.open( "GET", url, true );
         xhttp.send("");
 
         xhttp.onload = function( e ) {
           // Cache request
+          localStorage[ url ] = e.currentTarget.response;
 
-          localStorage[ name ] = e.currentTarget.response;
-
+          // Hide loader icon
           self.loader('hide');
+
+          // Parse and return response
           callback( self.parseXML( e.currentTarget.response ) );
         };
       }
     },
     /**
-     * [parseXML description]
-     * @param  {[type]} string [description]
-     * @return {[type]}        [description]
+     * Parses a string and outputs XML document
+     *
+     * @param  {String} string [description]
+     * @return {XML} parsed XML
      */
     parseXML: function ( string ) {
 
@@ -97,26 +104,38 @@
       return xmlDoc;
     },
     /**
-     * [displayResult description]
-     * @return {[type]} [description]
+     * Transform XML with XLS
+     *
+     * @return {XML} Transformed XML
      */
-    displayResult: function( xsl, xml ) {
+    transformXML: function( xsl, xml ) {
   
-        // code for Mozilla, Firefox, Opera, etc.
-        var xsltProcessor = new XSLTProcessor();
-        
-        xsltProcessor.importStylesheet( xsl );
-        
-        var resultDocument = xsltProcessor.transformToFragment( xml, document );
+      var xsltProcessor = new XSLTProcessor();
+      
+      xsltProcessor.importStylesheet( xsl );
+      
+      return xsltProcessor.transformToFragment( xml, document );
+    },
+    /**
+     * Setup events
+     *
+     * @return N/A
+     */
+    setupEvents: function() {
 
-        this.container.innerHTML = "";
-        this.container.appendChild( resultDocument );
+      var self = this;
+      
+      // Refresh content when clicked on the refresh icon
+      document.getElementById('refresh').addEventListener( 'click', function() {
+        self.loadContent();
+      });
 
     },
     /**
-     * [loader description]
+     * Shows and hides loader icon
+     *
      * @param  {[type]} action [description]
-     * @return {[type]}        [description]
+     * @return N/A
      */
     loader: function( action ) {
 
@@ -126,10 +145,27 @@
         this.loaderIcon.src = "loader.gif";
       }
 
+    },
+    /**
+     * Register google analytics
+     *
+     * @return N/A
+     */
+    analytics: function() {
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-31623194-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
     }
 
   };
 
   app.init();
 
-})();
+});
