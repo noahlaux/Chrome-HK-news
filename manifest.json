@@ -16,6 +16,5 @@
     "http://news.ycombinator.com/",
     "http://*.google-analytics.com/",
     "https://*.google-analytics.com/"
-  ],
-  "update_url": "https://github.com/noahlaux/Chrome-HK-news/blob/master/updateInfo.xml"
+  ]
 }
