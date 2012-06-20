@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="options">
+    <header>
+    	Hacker news settings
+    </header>
+  	<div id="container">
+  		<fieldset>
+
+			<!-- Notification settings -->  			
+  			<legend>Notifications</legend>
+
+  			<div>
+	  			<label for="showNotifications">Show notifications</label>
+	  			<input id="showNotifications" type="checkbox">
+			</div>
+
+  			<div>
+	  			<label>Check for updates every</label>
+  				<select id="updateInterval">
+  					<option value="10000">10 seconds</option>
+  					<option value="60000">minute</option>
+  					<option value="300000">5 minutes</option>
+  					<option value="600000">10 minutes</option>
+  					<option value="1800000">half hour</option>
+  					<option value="3600000">hour</option>
+  				</select>
+  			</div>
+
+  			<div>
+	  			<label>Display notification</label>
+  				<select id="notificationDisplayTime">
+  					<option value="5000">for 5 seconds</option>
+  					<option value="10000">for 10 seconds</option>
+  					<option value="300000">in 1 minute</option>
+  					<option value="0">until closed manually</option>
+  				</select>
+  			</div>
+  		</fieldset>
+  	</div>
+  	  <script type="text/javascript" src="js/options.js"></script>	
+</body>
+</html>

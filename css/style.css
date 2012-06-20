@@ -1,0 +1,106 @@
+
+body {
+	background-color: #f6f6ef;
+	font-family: Verdana;
+	font-size: 12px;
+	width: 500px;
+}
+
+body.notification {
+	width: auto;
+}
+
+body.options {
+	margin: 10px auto;
+}
+
+fieldset {
+	border-radius: 5px;
+}
+
+fieldset legend {
+	font-weight: bold;
+}
+
+a:link {
+	color: black;
+	text-decoration: none;
+ 	text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    -webkit-text-overflow: ellipsis;
+    outline: none;
+    overflow: hidden;
+}
+
+#loader, #refresh, #options {
+	float: right;
+	margin-left: 5px;
+	width: 16px;
+	height: 16px;
+}
+
+#refresh {
+	background-image: url('../img/refresh.png');
+}
+
+#refresh.updating {
+	background-image: url('../img/loader.gif');
+}
+
+#refresh:hover {
+	background-image: url('../img/refresh_hover.png');
+}
+
+#options {
+	background-image: url('../img/options.png');
+}
+
+#options:hover {
+	background-image: url('../img/options_hover.png');
+}
+
+a:hover {
+	color: #F60;
+}
+
+a:visited {
+	color: #828282 !important;
+}
+
+header {
+	background-color: #F60;
+	padding: 5px;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.options header {
+	margin-bottom: 10px;
+}
+
+ul {
+	list-style: none;
+	padding: 0 0 10px 0px;
+	height: 400px;
+	overflow: auto;
+}
+
+.notification ul {
+	height: auto;
+}
+
+ul li {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.notification ul li:last-child {
+	margin-bottom: 0;
+}
+
+ul li div a, ul li div a:visited {
+	font-size: smaller;
+	color: #828282 !important;
+	font-weight: normal;
+	text-transform: uppercase;
+}
