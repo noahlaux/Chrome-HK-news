@@ -1,7 +1,7 @@
 /**
  * Background processing
  *
- * @version  1.1
+ * @version 1.1
  *
  * @author Noah Laux (noahlaux@gmail.com)
  */
@@ -9,15 +9,23 @@
 
     // Declare paths from localStorage
     // This implies that the main application has already been initiated
-    var xslPath         = localStorage.getItem('xslPath'),
-        xmlPath         = localStorage.getItem('xmlPath'),
-        options         = getOptions();
+    var xslPath = localStorage.getItem('xslPath'),
+        xmlPath = localStorage.getItem('xmlPath'),
+        options = getOptions();
     
     initiate();
     
+    /**
+     * Initiate background processing with timer
+     *
+     * @return N/A
+     */
     function initiate() {
-        // Setup timed check
+
+        // Clear old timer
         clearInterval( interval );
+
+        // Setup timed check
         var interval = setInterval( checkForNew, options.updateInterval );
     }
 
@@ -183,7 +191,7 @@
             // Hide the notification after the configured duration.
             setTimeout( function(){
                 notification.cancel();
-            }, options.notificationDisplayTime);
+            }, options.notificationDisplayTime );
         }
     }
 

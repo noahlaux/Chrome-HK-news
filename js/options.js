@@ -1,3 +1,10 @@
+/**
+ * Script file for options page
+ *
+ * @version 1.11
+ *
+ * @author Noah Laux (noahlaux@gmail.com)
+ */
 document.addEventListener('DOMContentLoaded', function () {
 
     var options = JSON.parse( localStorage.getItem( 'options' ) );
