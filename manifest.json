@@ -1,15 +1,23 @@
 {
   "name": "Chrome HackerNews",
-  "version": "1.11",
+  "version": "1.12",
   "manifest_version": 2,
-  "description": "Display the most popular Hacker News on a list, and show desktop notification when new items arrives",
+  "description": "Display the most popular Hacker News on a list, and show desktop and badge notification when new items arrives",
+  "icons": {
+    "48": "img/icon.gif",
+    "128": "img/icon.gif"
+  },
   "browser_action": {
+    "default_title": "Hacker News",
     "default_icon": "img/icon.gif",
     "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "background": { 
-    "scripts": ["js/lib.js","js/background.js"] 
+    "scripts": [
+      "js/lib.js",
+      "js/background.js"
+      ] 
     },
   "permissions": [
     "notifications",
