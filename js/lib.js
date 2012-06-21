@@ -101,7 +101,15 @@
                 };
 
                 xhttp.onerror = function( e ) {
-                    console.log('could not load: ' + url, e);
+
+                    var message = 'Can not load: ' + url + '\n Trying again in a while';
+                    
+
+
+                    // Set icon to alert
+                    self.setBadge( '!', message, 'alert' );
+
+                    console.log( message, e );
                 };
             }
         },
@@ -170,6 +178,27 @@
                 this.refresh.className = 'updating';
             }
 
+        },
+        setBadge: function( text, title, type ) {
+            
+            // Set text on badge
+            chrome.browserAction.setBadgeText({
+                text: text.toString()
+            });
+
+            // Set title on badge
+            chrome.browserAction.setTitle({
+                title: title.toString()
+            });
+
+            if ( type === 'alert' ) {
+                color = { color: [255, 0, 0, 150] };
+            } else {
+                color = { color : [255, 100, 48, 150]};
+            }
+
+            // Set badge color
+            chrome.browserAction.setBadgeBackgroundColor( color );
         },
         /**
          * Register google analytics

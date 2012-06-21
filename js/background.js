@@ -38,7 +38,7 @@
      */
     function checkForNew() {
 
-        if ( options.showNotifications && xmlPath ) {
+        if ( xmlPath ) {
 
             lib.loadXMLDoc( xmlPath, true, function( response ) {
 
@@ -49,6 +49,9 @@
                     newItems            = getNewItems( previousXml, items );
 
                 if ( newItems.length > 0 ) {
+
+                    // Set number of new items on icon
+                    lib.setBadge( newItems.length, newItems.length + ' new items', 'message' );
 
                     // Remove all original items from feed
                     removeNodes( originalItemsNode, items );
@@ -65,8 +68,10 @@
                     // Update feed cache
                     localStorage.setItem( xmlPath, clonedResponse );
 
-                    // Show notification
-                    showNotification();
+                    if ( options.showNotifications ) {
+                        // Show notification
+                        showNotification();
+                    }
                 }
 
             });
