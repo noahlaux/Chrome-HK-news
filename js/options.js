@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
      /**
      * Initiate items with current options and set up listeners
      *
-     * @param {HTML elements} elements Elements to be intiated
+     * @param {Array} Array of HTML elements to be intiated
      * @param {String} method Method (e.g. value | checked) to check and recieve element value from
      *
      * @return N/A
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         /**
-         * Fired element changes, retrieves current value and save to localstorage
+         * Fires when an element changes, retrieves current value and save to localstorage
          *
          * @param {Event} e
          *
