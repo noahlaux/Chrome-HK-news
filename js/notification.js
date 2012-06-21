@@ -6,4 +6,5 @@ document.addEventListener('DOMContentLoaded', function () {
 		html			= lib.transformXML( xls, notifications );
 
 	document.getElementById('container').appendChild( html );
+	
 });

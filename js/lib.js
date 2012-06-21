@@ -15,16 +15,20 @@
          */
         init: function( options ) {
 
+            var self        = this;
+            
             // Declare elements
             this.container  = document.querySelector( options.container || "#container" );
-            this.refresh = document.querySelector( options.loaderIcon || "#refresh" );
+            this.refresh    = document.querySelector( options.loaderIcon || "#refresh" );
 
             // Declare paths
             this.xslPath    = localStorage.xslPath = options.xslPath;
             this.xmlPath    = localStorage.xmlPath = options.xmlPath;
 
             // Load and cache XLS to use for tranformation
-            this.xsl        = this.loadXMLDoc( this.xslPath );
+            this.loadXMLDoc( this.xslPath, false, function( response ) {
+                self.xsl = response;
+            });
 
             // Trigger analytics
             this.analytics();
@@ -77,7 +81,7 @@
             if ( !force && localStorage.getItem( url ) ) {
 
                 // Return cached XML
-                return this.parseXML( localStorage.getItem( url ) );
+                callback( this.parseXML( localStorage.getItem( url ) ) );
 
             } else {
 
@@ -93,8 +97,6 @@
                     if ( !force ) {
                         localStorage.setItem( url, e.currentTarget.response );
                     }
-
-                    // Parse and return response
                     callback( self.parseXML( e.currentTarget.response ) );
                 };
 

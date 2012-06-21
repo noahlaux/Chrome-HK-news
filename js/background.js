@@ -159,7 +159,7 @@
                 {
                     updateInterval: 60000,
                     showNotifications: true,
-                    notificationDisplayTime: 7000
+                    notificationDisplayTime: 10000
                 }
             ));
 

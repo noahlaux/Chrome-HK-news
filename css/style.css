@@ -16,6 +16,7 @@ body.options {
 
 fieldset {
 	border-radius: 5px;
+	margin: 20px;
 }
 
 fieldset legend {
@@ -30,6 +31,13 @@ a:link {
     -webkit-text-overflow: ellipsis;
     outline: none;
     overflow: hidden;
+}
+a:hover {
+	color: #F60;
+}
+
+a:visited {
+	color: #828282 !important;
 }
 
 #loader, #refresh, #options {
@@ -59,23 +67,13 @@ a:link {
 	background-image: url('../img/options_hover.png');
 }
 
-a:hover {
-	color: #F60;
-}
 
-a:visited {
-	color: #828282 !important;
-}
 
 header {
 	background-color: #F60;
 	padding: 5px;
 	font-size: 14px;
 	font-weight: bold;
-}
-
-.options header {
-	margin-bottom: 10px;
 }
 
 ul {
@@ -103,4 +101,15 @@ ul li div a, ul li div a:visited {
 	color: #828282 !important;
 	font-weight: normal;
 	text-transform: uppercase;
+}
+
+footer {
+	border-top: 1px dashed #000;
+	padding: 5px;
+	text-align: center;
+}
+
+footer a {
+	font-weight: bold;
+	color: #000 !important;
 }
