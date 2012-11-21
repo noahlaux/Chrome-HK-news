@@ -1,7 +1,9 @@
 /**
  * Background processing
  *
- * @version 1.1
+ * implement this to retrieve images
+ *
+ * @version 1.2
  *
  * @author Noah Laux (noahlaux@gmail.com)
  */
@@ -9,12 +11,12 @@
 
     // Declare paths from localStorage
     // This implies that the main application has already been initiated
-    var xslPath = localStorage.getItem('xslPath'),
-        xmlPath = localStorage.getItem('xmlPath'),
-        options = getOptions();
-    
+    var xslPath     = localStorage.getItem('xslPath'),
+        xmlPath     = localStorage.getItem('xmlPath'),
+        options     = getOptions();
+
     initiate();
-    
+
     /**
      * Initiate background processing with timer
      *
@@ -31,7 +33,7 @@
 
     // Make public initiate function so we can target it from options page
     window.initiate = initiate;
-    
+
     /**
      * Loads new feed and check if there is new items
      * @return N/A
@@ -43,7 +45,6 @@
             lib.loadXMLDoc( xmlPath, true, function( response ) {
 
                 var previousXml         = lib.parseXML( localStorage.getItem( xmlPath ) ),
-                    clonedResponse      = ( new XMLSerializer() ).serializeToString( response ),
                     originalItemsNode   = response.getElementsByTagName('channel')[0],
                     items               = response.getElementsByTagName('item'),
                     newItems            = getNewItems( previousXml, items );
@@ -52,6 +53,9 @@
 
                     // Set number of new items on icon
                     lib.setBadge( newItems.length, newItems.length + ' new items', 'message' );
+
+                    // Get and cache new images from feeds
+                    getImages( newItems );
 
                     // Remove all original items from feed
                     removeNodes( originalItemsNode, items );
@@ -65,8 +69,10 @@
                     // Insert serialized feed into localStorage
                     localStorage.setItem( 'notifications', XMLstring );
 
+                    //var clonedResponse      = ( new XMLSerializer() ).serializeToString( response )
+
                     // Update feed cache
-                    localStorage.setItem( xmlPath, clonedResponse );
+                    localStorage.setItem( xmlPath, XMLstring );
 
                     if ( options.showNotifications ) {
                         // Show notification
@@ -77,6 +83,68 @@
             });
 
         }
+    }
+
+    function getImages( items ) {
+
+        var feedImages  = {};
+    
+        // Fetch links
+        items.forEach( function( item, i ) {
+            
+            var url = item.getElementsByTagName('link')[0].childNodes[0].nodeValue;
+
+            get( url, function( html ) {
+                              
+                var root = document.createElement("div");
+                
+                root.innerHTML = html;
+                
+                var images = Array.prototype.filter.call( root.querySelectorAll( 'body img' ), function( image, index, nodeList ) {
+                    return ( image.width > 200 );
+                });
+
+                // temporary store first feed image if available
+                if ( images[0] ) {
+                    feedImages[ url ] = images[0].src;
+                }
+
+                // We reached last item, so store our image urls
+                if ( i === items.length - 1 ) {
+                    extend( feedImages, JSON.parse( localStorage.getItem( 'feedImages' ) ) );
+                    localStorage.setItem( 'feedImages', JSON.stringify( feedImages ) );
+                }
+
+            });
+           
+        });
+
+    }
+
+    function extend( destination, source ) {
+          for ( var property in source ) {
+            destination[ property ] = source[ property ];
+          }
+          return destination;
+    }
+
+    function get( url, callback ) {
+        
+        // Initiate new request
+        var xhttp = new XMLHttpRequest();
+
+        xhttp.open( "GET", url, true );
+        xhttp.send("");
+
+        xhttp.onload = function( e ) {
+            callback( e.currentTarget.response );
+        };
+
+        xhttp.onerror = function( e ) {
+            var message = 'Can not load: ' + url + '\n Trying again in a while';
+            callback();
+            console.log( message, e );
+        };
     }
 
     /**
@@ -90,12 +158,25 @@
     function getNewItems( previousXml, items ) {
 
         var itemsLength = items.length,
-            newItems    = [];
+            newItems    = [],
+            feedImages  = JSON.parse( localStorage.getItem( 'feedImages' ) );
 
         for ( var x = 0; x < itemsLength; x++ ) {
                     
             var link = items[x].getElementsByTagName('link')[0].childNodes[0].nodeValue;
             
+            // Check if we have an image to the link
+            if ( feedImages[ link ] ) {
+                
+                var imageUrl = lib.parseXML( '<imageurl>' + encodeURI( feedImages[ link ] ) + '</imageurl>' ).querySelector('imageurl');
+                
+                if ( !imageUrl.querySelector('parsererror') ) {
+                    items[x].appendChild( imageUrl );
+                    console.log( items[x] );
+                }
+
+            }
+
             if ( !contains( previousXml, 'link', link ) ) {
                 newItems.push( items[x].cloneNode( true ) );
             }

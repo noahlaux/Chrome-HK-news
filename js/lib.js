@@ -1,7 +1,7 @@
 /**
  * Library functions
  *
- * @version 1.1
+ * @version 1.2
  *
  * @author Noah Laux (noahlaux@gmail.com)
  */
@@ -30,6 +30,11 @@
                 self.xsl = response;
             });
 
+            // Initiate feed images localstorage for initial use
+            if ( !localStorage.getItem( 'feedImages' ) ) {
+                localStorage.setItem( 'feedImages', JSON.stringify( {} ) );
+            }
+
             // Trigger analytics
             this.analytics();
 
@@ -53,6 +58,7 @@
             this.loader('show');
 
             this.loadXMLDoc( this.xmlPath, true, function( response ) {
+                
                 // Transform response to HTML
                 var resultDocument = self.transformXML( self.xsl, response );
 
@@ -104,8 +110,6 @@
 
                     var message = 'Can not load: ' + url + '\n Trying again in a while';
                     
-
-
                     // Set icon to alert
                     self.setBadge( '!', message, 'alert' );
 
@@ -124,7 +128,11 @@
 
             var parser = new DOMParser(),
                 xmlDoc = parser.parseFromString( string, "text/xml" );
-              
+            
+            if ( xmlDoc.getElementsByTagName('item').length > 0 ) {
+                xmlDoc = this.addImages( xmlDoc );
+            }
+            
             return xmlDoc;
         },
         /**
@@ -139,6 +147,31 @@
             xsltProcessor.importStylesheet( xsl );
 
             return xsltProcessor.transformToFragment( xml, document );
+        },
+        addImages: function( xmlDoc ) {
+
+            var items       = xmlDoc.getElementsByTagName('item');
+                itemsLength = items.length,
+                feedImages  = JSON.parse( localStorage.getItem( 'feedImages' ) );
+
+            for ( var x = 0; x < itemsLength; x++ ) {
+                                    
+                var link = items[x].getElementsByTagName('link')[0].childNodes[0].nodeValue;
+
+                // Check if we have an image to the link
+                if ( feedImages[ link ] ) {
+
+                    var imageUrl = lib.parseXML( '<imageurl>' + encodeURI( feedImages[ link ] ) + '</imageurl>' ).querySelector('imageurl');
+                    
+                    if ( !imageUrl.querySelector('parsererror') ) {
+                        items[x].appendChild( imageUrl );
+                    }
+
+                }
+            }
+            console.log( xmlDoc );
+            return xmlDoc;
+
         },
         /**
          * Setup events
@@ -194,7 +227,7 @@
             if ( type === 'alert' ) {
                 color = { color: [255, 0, 0, 150] };
             } else {
-                color = { color : [255, 100, 48, 150]};
+                color = { color : [255, 100, 48, 150] };
             }
 
             // Set badge color

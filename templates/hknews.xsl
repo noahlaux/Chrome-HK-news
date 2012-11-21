@@ -6,10 +6,20 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <ul>
       <xsl:for-each select="rss/channel/item">
         <li>
-          <a href="{link}" target="_blank"><xsl:value-of select="title" /></a>
+          <img src="{imageurl}" />
+          
           <div>
-            <a href="{comments}" target="_blank">comments</a>
+          
+            <h3>
+              <a href="{link}" target="_blank"><xsl:value-of select="title" /></a>
+            </h3>
+            
+            <div>
+              <a href="{comments}" target="_blank">comments</a>
+            </div>
+          
           </div>
+          
         </li>
       </xsl:for-each>
     </ul>
