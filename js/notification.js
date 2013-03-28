@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('container').appendChild( html );
 
 	// Open options
-    document.getElementById('options').addEventListener( 'click', function( e ) {
-        chrome.tabs.create({
-            url: 'options.html'
-        });
-    });
-	
+	document.getElementById('options').addEventListener( 'click', function( e ) {
+		chrome.tabs.create({
+			url: 'options.html'
+		});
+	});
+
 });
