@@ -23,6 +23,11 @@ fieldset legend {
 	font-weight: bold;
 }
 
+a {
+	color: black;
+	outline: none;
+}
+
 h3 {
 	margin: 0;
 }
@@ -109,7 +114,7 @@ ul li img[src^="http"] {
 	margin-bottom: 0;
 }
 
-ul li div > div > a, 
+ul li div > div > a,
 ul li div > div > a:visited {
 	font-size: smaller;
 	color: #828282 !important;

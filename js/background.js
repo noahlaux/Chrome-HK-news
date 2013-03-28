@@ -57,6 +57,8 @@
                     // Get and cache new images from feeds
                     getImages( newItems );
 
+                    var clonedResponse  = ( new XMLSerializer() ).serializeToString( response );
+
                     // Remove all original items from feed
                     removeNodes( originalItemsNode, items );
 
@@ -69,10 +71,8 @@
                     // Insert serialized feed into localStorage
                     localStorage.setItem( 'notifications', XMLstring );
 
-                    //var clonedResponse      = ( new XMLSerializer() ).serializeToString( response )
-
                     // Update feed cache
-                    localStorage.setItem( xmlPath, XMLstring );
+                    localStorage.setItem( xmlPath, clonedResponse );
 
                     if ( options.showNotifications ) {
                         // Show notification
@@ -88,25 +88,45 @@
     function getImages( items ) {
 
         var feedImages  = {};
-    
+
         // Fetch links
         items.forEach( function( item, i ) {
-            
+
             var url = item.getElementsByTagName('link')[0].childNodes[0].nodeValue;
 
             get( url, function( html ) {
-                              
+
                 var root = document.createElement("div");
-                
+
                 root.innerHTML = html;
-                
-                var images = Array.prototype.filter.call( root.querySelectorAll( 'body img' ), function( image, index, nodeList ) {
+
+                var images = Array.prototype.filter.call( root.querySelectorAll( 'img' ), function( image, index, nodeList ) {
+                    // Only get th
                     return ( image.width > 200 );
                 });
 
-                // temporary store first feed image if available
+                // TODO make further investigation to pick the right image
                 if ( images[0] ) {
-                    feedImages[ url ] = images[0].src;
+
+                    var image = images[0];
+
+                    // Ensure that we have an absolute URL
+                    if ( (/^https?:\/\//).test( image.src ) ) {
+
+                        // temporary store first feed image
+                        feedImages[ url ] = image.src;
+
+                    } else {
+
+                        // Make dummy anchor, to extract hostname
+                        var baseUrl = document.createElement( 'a' );
+                        baseUrl.href = url;
+
+                        var imageUrl = document.createElement( 'a' );
+                        imageUrl.href = image.src;
+
+                        feedImages[ url ] = baseUrl.protocol + '//' + baseUrl.hostname + imageUrl.pathname;
+                    }
                 }
 
                 // We reached last item, so store our image urls
@@ -116,7 +136,7 @@
                 }
 
             });
-           
+
         });
 
     }
@@ -129,7 +149,7 @@
     }
 
     function get( url, callback ) {
-        
+
         // Initiate new request
         var xhttp = new XMLHttpRequest();
 
@@ -162,17 +182,17 @@
             feedImages  = JSON.parse( localStorage.getItem( 'feedImages' ) );
 
         for ( var x = 0; x < itemsLength; x++ ) {
-                    
+
             var link = items[x].getElementsByTagName('link')[0].childNodes[0].nodeValue;
-            
+
             // Check if we have an image to the link
             if ( feedImages[ link ] ) {
-                
+
                 var imageUrl = lib.parseXML( '<imageurl>' + encodeURI( feedImages[ link ] ) + '</imageurl>' ).querySelector('imageurl');
-                
+
+                // Add if everything is a-ok
                 if ( !imageUrl.querySelector('parsererror') ) {
                     items[x].appendChild( imageUrl );
-                    console.log( items[x] );
                 }
 
             }
@@ -268,9 +288,9 @@
      * @return N/A
      */
     function showNotification(){
-        
+
         var notification = webkitNotifications.createHTMLNotification( 'notification.html' );
-        
+
         notification.show();
 
         if ( options.notificationDisplayTime > 0 ) {

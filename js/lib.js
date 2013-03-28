@@ -16,7 +16,7 @@
         init: function( options ) {
 
             var self        = this;
-            
+
             // Declare elements
             this.container  = document.querySelector( options.container || "#container" );
             this.refresh    = document.querySelector( options.loaderIcon || "#refresh" );
@@ -58,9 +58,11 @@
             this.loader('show');
 
             this.loadXMLDoc( this.xmlPath, true, function( response ) {
-                
+
+                var doc = self.addImages( response );
+
                 // Transform response to HTML
-                var resultDocument = self.transformXML( self.xsl, response );
+                var resultDocument = self.transformXML( self.xsl, doc );
 
                 self.container.innerHTML = "";
                 self.container.appendChild( resultDocument );
@@ -68,7 +70,7 @@
                 // Hide loader icon
                 self.loader('hide');
             });
-      
+
         },
         /**
          * Loads XML document, cache and parses it
@@ -80,7 +82,7 @@
          * @return N/A
          */
         loadXMLDoc: function( url, force, callback ) {
-          
+
             var self = this;
 
             // Check if cache exits, and if we should force reload
@@ -98,7 +100,7 @@
                 xhttp.send("");
 
                 xhttp.onload = function( e ) {
-                  
+
                     // Cache request
                     if ( !force ) {
                         localStorage.setItem( url, e.currentTarget.response );
@@ -109,7 +111,7 @@
                 xhttp.onerror = function( e ) {
 
                     var message = 'Can not load: ' + url + '\n Trying again in a while';
-                    
+
                     // Set icon to alert
                     self.setBadge( '!', message, 'alert' );
 
@@ -128,11 +130,7 @@
 
             var parser = new DOMParser(),
                 xmlDoc = parser.parseFromString( string, "text/xml" );
-            
-            if ( xmlDoc.getElementsByTagName('item').length > 0 ) {
-                xmlDoc = this.addImages( xmlDoc );
-            }
-            
+
             return xmlDoc;
         },
         /**
@@ -141,35 +139,41 @@
          * @return {XML} Transformed XML document
          */
         transformXML: function( xsl, xml ) {
-      
+
             var xsltProcessor = new XSLTProcessor();
 
             xsltProcessor.importStylesheet( xsl );
 
             return xsltProcessor.transformToFragment( xml, document );
         },
+
+        /**
+         * Inject images from feeds into nodes
+         *
+         * @param {HTML document} xmlDoc HTML to get images from
+         */
         addImages: function( xmlDoc ) {
 
-            var items       = xmlDoc.getElementsByTagName('item');
+            var items       = xmlDoc.getElementsByTagName( 'item' );
                 itemsLength = items.length,
                 feedImages  = JSON.parse( localStorage.getItem( 'feedImages' ) );
 
             for ( var x = 0; x < itemsLength; x++ ) {
-                                    
+
                 var link = items[x].getElementsByTagName('link')[0].childNodes[0].nodeValue;
 
                 // Check if we have an image to the link
                 if ( feedImages[ link ] ) {
 
                     var imageUrl = lib.parseXML( '<imageurl>' + encodeURI( feedImages[ link ] ) + '</imageurl>' ).querySelector('imageurl');
-                    
+
                     if ( !imageUrl.querySelector('parsererror') ) {
                         items[x].appendChild( imageUrl );
                     }
 
                 }
             }
-            console.log( xmlDoc );
+
             return xmlDoc;
 
         },
@@ -213,7 +217,7 @@
 
         },
         setBadge: function( text, title, type ) {
-            
+
             // Set text on badge
             chrome.browserAction.setBadgeText({
                 text: text.toString()
